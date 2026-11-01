@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="Copy one of nine Python files to your clipboard.">
+  <title>Code Clipboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #182230;
+      background: #f5f7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 280px;
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px 20px;
+    }
+
+    main {
+      width: min(100%, 760px);
+      padding: clamp(24px, 5vw, 48px);
+      border: 1px solid #e7ebf2;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 20px 60px rgb(29 48 77 / 7%);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #5368db;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 38px);
+      letter-spacing: -.04em;
+      line-height: 1.1;
+    }
+
+    .intro {
+      margin: 12px 0 30px;
+      color: #687386;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .copy-button {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #e5eaf2;
+      border-radius: 14px;
+      background: #fff;
+      color: #182230;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .copy-button:hover {
+      transform: translateY(-2px);
+      border-color: #c9d1fa;
+      background: #fafaff;
+      box-shadow: 0 8px 20px rgb(55 77 170 / 8%);
+    }
+
+    .copy-button:focus-visible {
+      outline: 3px solid rgb(83 104 219 / 28%);
+      outline-offset: 2px;
+    }
+
+    .copy-button:disabled { cursor: wait; opacity: .65; }
+
+    .button-copy { display: grid; gap: 5px; }
+    .button-title { font-size: 14px; font-weight: 650; }
+    .file-name { color: #7a8495; font-size: 12px; }
+
+    .copy-icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      color: #78849a;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 1;
+      max-width: calc(100vw - 32px);
+      padding: 12px 16px;
+      border: 1px solid #d8f0e2;
+      border-radius: 12px;
+      background: #effaf3;
+      color: #17683a;
+      box-shadow: 0 10px 30px rgb(28 45 70 / 14%);
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 10px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    #toast.visible { opacity: 1; transform: translate(-50%, 0); }
+    #toast.error { border-color: #f2d4d4; background: #fff3f2; color: #a33636; }
+
+    #clipboard-fallback {
+      position: fixed;
+      top: 0;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 20px 14px; }
+      main { border-radius: 20px; }
+      .button-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .copy-button { min-height: 72px; padding: 13px; }
+    }
+
+    @media (max-width: 360px) {
+      .button-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Quick copy · 9 files</p>
+    <h1>Code Clipboard</h1>
+    <p class="intro">Choose a button to copy its Python file to your clipboard.</p>
+
+    <section class="button-grid" aria-label="Python file copy buttons">
+      <button class="copy-button" type="button" data-file="prl-1.py">
+        <span class="button-copy"><span class="button-title">Button 1</span><span class="file-name">prl-1.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-2.py">
+        <span class="button-copy"><span class="button-title">Button 2</span><span class="file-name">prl-2.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-3.py">
+        <span class="button-copy"><span class="button-title">Button 3</span><span class="file-name">prl-3.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-4.py">
+        <span class="button-copy"><span class="button-title">Button 4</span><span class="file-name">prl-4.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-5.py">
+        <span class="button-copy"><span class="button-title">Button 5</span><span class="file-name">prl-5.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-6.py">
+        <span class="button-copy"><span class="button-title">Button 6</span><span class="file-name">prl-6.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-7.py">
+        <span class="button-copy"><span class="button-title">Button 7</span><span class="file-name">prl-7.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-8.py">
+        <span class="button-copy"><span class="button-title">Button 8</span><span class="file-name">prl-8.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <button class="copy-button" type="button" data-file="prl-9.py">
+        <span class="button-copy"><span class="button-title">Button 9</span><span class="file-name">prl-9.py</span></span>
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <textarea id="clipboard-fallback" aria-hidden="true" tabindex="-1"></textarea>
+
+  <script>
+    const sourceFiles = {"prl-1.py":"n=int(input(\"Enter The number Of Member\u0027s : \"))\r\narray=[]\r\n\r\nfor i in range(n):\r\n    array.append(int(input(\"Enter the number of books borrowed by member \"+str(i+1) +\":\")))  \r\nprint(array)\r\n\r\n# Average number of books borrowed by all library members\r\n\r\nsum=0\r\nfor i in range (n):\r\n    sum=sum+array[i]\r\n    \r\naverage=sum/n\r\nprint(\"average books borrowed by all members : \",average)\r\n\r\n#book with the highest and lowest number of borrowings in the library\r\nmin =999999999999\r\nmax=0\r\ncount=0\r\nfor i in range(n):\r\n    if array[i] \u003c min:\r\n        min = array[i]\r\n    if array[i] \u003emax:\r\n        max=array[i]\r\n        \r\nprint(\"LOWEST :\",min)\r\nprint(\"HIGHEST :\",max)\r\n\r\n# Display members who borrowed no books\r\ncount=0\r\nfor i in range(n):\r\n    if array[i]==0:\r\n        count=count+1\r\nprint(\"members who borrowed no books\",count)\r\n\r\n\r\nmf = 0\r\n\r\nfor i in range(n):\r\n\r\n    f = array.count(array[i])\r\n\r\n    print(\"Frequency of {0} is {1}\".format(array[i],f))\r\n\r\n    if f \u003e mf:\r\n        mf = f\r\n\r\nprint(\"Maximum frequency is: \",mf)\r\n\r\n\r\n\r\n#OUTPUT\r\n\r\n# PS C:\\Users\\Asus\\Desktop\\DSL\u003e \u0026 C:\\Users\\Asus\\AppData\\Local\\Microsoft\\WindowsApps\\python3.13.exe c:/Users/Asus/Desktop/DSL/prl-1.py\r\n# Enter The number Of Member\u0027s : 3\r\n# Enter the number of books borrowed by member 1:3524\r\n# Enter the number of books borrowed by member 2:3542\r\n# Enter the number of books borrowed by member 3:3524\r\n# [3524, 3542, 3524]\r\n# average books borrowed by all members :  3530.0\r\n# LOWEST : 3524\r\n# HIGHEST : 3542\r\n# members who borrowed no books 0\r\n# Frequency of 3524 is 2\r\n# Frequency of 3542 is 1\r\n# Frequency of 3524 is 2\r\n# Maximum frequency is:  2\r\n# PS C:\\Users\\Asus\\Desktop\\DSL\u003e                                                                                                      ","prl-2.py":"# important Note \r\n# enter sorted Array every time !!\r\n\r\nn= int(input(\"Enter The Size of array :\"))\r\narray=[]\r\n\r\nfor i in range(n):\r\n    array.append(int(input(\"enter the element : \")))\r\n    \r\n    \r\n#Linear search !!\r\nkey=int(input(\"Enter The elemet to be search :\"))\r\n\r\nflag=0\r\nfor i in range(n):\r\n    if array[i]==key:\r\n        print(\"element found at position (by using liniear search !!): \",i+1)\r\n        flag=1\r\n        break;    \r\nif flag==0 :\r\n    print(\"element not found(by using liniear search !!) !!!\")\r\n    \r\n    \r\n#binary search \r\n\r\nflag=0\r\n\r\nl=0\r\nh=n-1\r\nmid=0\r\nwhile l\u003c=h:\r\n    mid=int((h+l)/2)\r\n    if array[mid]==key:\r\n        print(\" Element found at(byusing binary search!!) : \",mid)\r\n        flag=mid\r\n        break;\r\n    elif key\u003cmid:\r\n        h=mid-1\r\n    elif key\u003emid:\r\n        l=mid+1        \r\n\r\nif flag==0:\r\n    print(\"Element Not found(by using binary search )!!!\")\r\n\r\n# OUTPUT\r\n\r\n# PS C:\\Users\\Asus\\Desktop\\DSL\u003e \u0026 C:\\Users\\Asus\\AppData\\Local\\Microsoft\\WindowsApps\\python3.13.exe c:/Users/Asus/Desktop/DSL/prl-2.py\r\n# Enter The Size of array :3\r\n# enter the element : 1\r\n# enter the element : 2\r\n# enter the element : 3\r\n# Enter The elemet to be search :3\r\n# element found at position :  3\r\n#  Element found at :  2\r\n# PS C:\\Users\\Asus\\Desktop\\DSL\u003e ","prl-3.py":"n=int(input(\"Enter number of employees ?\"))\r\narray=[]\r\n\r\nfor i in range(n):\r\n    array.append(int(input(\"enter the salaries of emp \"+str(i+1)+\":\")))\r\n    \r\nfor i in range(n):\r\n    for j in range(n-i-1):\r\n        if array[j]\u003earray[j+1]:\r\n            temp=array[j]\r\n            array[j]=array[j+1]\r\n            array[j+1]=temp\r\nprint(\"sorted array using bubble sort : \",array)\r\n\r\nfor i in range(n):\r\n    min=i\r\n    for j in range(i+1,n):\r\n        if array[j]\u003carray[min]:\r\n            min=j\r\n    array[i],array[min] =array[min],array[i]\r\n\r\nprint(\"using selection sort : \",array) \r\n        ","prl-4.py":"text = \"\"\r\n\r\na = []\r\nb = []\r\n\r\nprint(\"*********MENU*********\")\r\n\r\nwhile 1:\r\n    print(\"1. New Character\")\r\n    print(\"2. Undo\")\r\n    print(\"3. Redo\")\r\n    print(\"4. Exit\")\r\n\r\n    m = int(input(\"Enter your choice: \"))\r\n\r\n    if m == 1:\r\n        ch = input(\"Enter the new character: \")\r\n        text = text + ch\r\n        a.append(ch)\r\n        b.clear()\r\n\r\n        print(\"Current Status:\", text)\r\n\r\n    elif m == 2:\r\n        if len(a) \u003e 0:\r\n            x = a.pop()\r\n            b.append(x)\r\n            text = text[:-1]\r\n            print(\"Current Status:\", text)\r\n        else:\r\n            print(\"Nothing to Undo\")\r\n\r\n    elif m == 3:\r\n        if len(b) \u003e 0:\r\n            x = b.pop()\r\n            a.append(x)\r\n            text = text + x\r\n            print(\"Current Status:\", text)\r\n        else:\r\n            print(\"Nothing to Redo\")\r\n\r\n    elif m == 4:\r\n        break\r\n\r\n    else:\r\n        print(\"Invalid Choice\")","prl-5.py":"f = r = -1\r\n\r\nmax1 = int(input(\"Enter capacity of Queue: \"))\r\nq = []\r\n\r\nwhile 1:\r\n    print(\"\\n#### MENU ####\")\r\n    print(\"1. Insert Event\")\r\n    print(\"2. Process Event\")\r\n    print(\"3. Display Events\")\r\n    print(\"4. Cancel Event\")\r\n    print(\"5. Exit\")\r\n\r\n    ch = int(input(\"Enter your choice: \"))\r\n\r\n    # Insert Event\r\n    if ch == 1:\r\n        if r \u003e= max1-1:\r\n            print(\"Queue is full\")\r\n        else:\r\n            r = r+1\r\n            q.append(int(input(\"Enter event: \")))\r\n\r\n            if f == -1:\r\n                f = 0\r\n\r\n    # Process Event\r\n    elif ch == 2:\r\n        if f == -1 or f \u003e r:\r\n            print(\"Queue is empty\")\r\n        else:\r\n            print(\"Processed event:\", q[f])\r\n            q[f] = None\r\n            f = f+1\r\n\r\n    # Display Events\r\n    elif ch == 3:\r\n        if f == -1 or f \u003e r:\r\n            print(\"Queue is empty\")\r\n        else:\r\n            print(\"Pending events:\")\r\n            for i in range(f, r+1):\r\n                print(q[i])\r\n\r\n    # Cancel Event\r\n    elif ch == 4:\r\n        el = int(input(\"Enter event to cancel: \"))\r\n        ind = None\r\n\r\n        for i in range(f, r+1):\r\n            if q[i] == el:\r\n                ind = i\r\n                break\r\n\r\n        if ind == None:\r\n            print(\"Event does not exist\")\r\n        else:\r\n            for i in range(ind, r):\r\n                q[i] = q[i+1]\r\n\r\n            q[r] = None\r\n            r = r-1\r\n\r\n            if f \u003e r:\r\n                f = r = -1\r\n\r\n            print(\"Event cancelled successfully\")\r\n\r\n    # Exit\r\n    elif ch == 5:\r\n        break\r\n\r\n    else:\r\n        print(\"Invalid choice\")","prl-6.py":"size = 10\r\n\r\nht = [[] for _ in range(size)]\r\nprint(ht)\r\n\r\nwhile 1:\r\n    print(\"\\n1. Insert\")\r\n    print(\"2. Delete\")\r\n    print(\"3. Search\")\r\n    print(\"4. Display\")\r\n    print(\"5. Exit\")\r\n\r\n    ch = int(input(\"Enter choice: \"))\r\n\r\n    if ch == 1:\r\n        v = int(input(\"Enter the element to be inserted: \"))\r\n        hk = v % size\r\n        ht[hk].append(v)\r\n        print(\"Element inserted successfully\")\r\n\r\n    elif ch == 2:\r\n        v = int(input(\"Enter the element to be deleted: \"))\r\n        hk = v % size\r\n\r\n        if v in ht[hk]:\r\n            ht[hk].remove(v)\r\n            print(\"Element deleted successfully\")\r\n        else:\r\n            print(\"Element not found\")\r\n\r\n    elif ch == 3:\r\n        flag = -1\r\n        s = int(input(\"Enter the element to be searched: \"))\r\n        hk = s % size\r\n\r\n        for item in ht[hk]:\r\n            if item == s:\r\n                print(\"Element found at\", hk)\r\n                flag = 1\r\n                break\r\n\r\n        if flag == -1:\r\n            print(\"Element not found\")\r\n\r\n    elif ch == 4:\r\n        for i in range(size):\r\n            print(ht[i])\r\n\r\n    elif ch == 5:\r\n        print(\"Exiting program...\")\r\n        break\r\n\r\n    else:\r\n        print(\"Invalid choice\")","prl-7.py":"size=int(input(\"Enter Size for Hash table : -  \"))\r\nht = [None]*size\r\n\r\nprint(ht)\r\n\r\nwhile 1:\r\n    print(\"\\n1. Insert\")\r\n    print(\"2. Search\")\r\n    print(\"3. Delete\")\r\n    print(\"4. Display\")\r\n    print(\"5. Exit\")    \r\n    ch=int(input(\"enter The choice : -\"))\r\n    \r\n    if ch==1:\r\n        v=int(input(\"Enter element to be inserted : \"))\r\n        hk=v%size\r\n        flag=-1\r\n        \r\n        for i in range(size):\r\n            if ht[hk]==None:\r\n                ht[hk]=v\r\n                flag=hk\r\n                break\r\n            else:\r\n                print(\"Collision found at : \",hk)\r\n                hk=(hk+1)%size\r\n        if flag==-1:\r\n            print(\"Table is Full !!\")\r\n\r\n    if ch==2:\r\n        v=int(input(\"Enter element to be Search : \"))\r\n        hk=v%size\r\n        flag=-1\r\n        \r\n        for i in range(size):\r\n            if ht[hk]==v:\r\n                print(\"element found at\",hk)\r\n                flag=1\r\n                break\r\n            else:\r\n                hk=(hk+1)%size\r\n        if flag==-1:\r\n            print(\"Element Not Found !!\")\r\n            \r\n    if ch==3:\r\n        v=int(input(\"Enter element to be Delete : \"))\r\n        hk=v%size\r\n        flag=-1\r\n        \r\n        for i in range(size):\r\n            if ht[hk]==v:\r\n                ht[hk]=None\r\n                flag=1\r\n                print(\"Element Deleted Sucsessfully !!!\")\r\n                break\r\n            else:\r\n                hk=(hk+1)%size\r\n        if flag==-1:\r\n            print(\"Element Not Found !!\")\r\n            \r\n    if ch==4:\r\n        print(ht)\r\n        \r\n    if ch==5:\r\n        break","prl-8.py":"class Graph:\r\n    def __init__(self, n):\r\n        self.n = n\r\n        self.matrix = [[0] * n for _ in range(n)]\r\n        self.adj = [[] for _ in range(n)]\r\n\r\n    def create_graph(self, edges):\r\n        for u, v in edges:\r\n            self.matrix[u][v] = 1\r\n            self.matrix[v][u] = 1\r\n\r\n            self.adj[u].append(v)\r\n            self.adj[v].append(u)\r\n\r\n        print(\"Graph created successfully!\")\r\n\r\n    def dfs(self, start, visited):\r\n        visited[start] = True\r\n        print(start, end=\" \")\r\n\r\n        for i in range(self.n):\r\n            if self.matrix[start][i] == 1 and not visited[i]:\r\n                self.dfs(i, visited)\r\n\r\n    def bfs(self, start):\r\n        visited = [False] * self.n\r\n        queue = [start]\r\n        visited[start] = True\r\n\r\n        while queue:\r\n            node = queue.pop(0)\r\n            print(node, end=\" \")\r\n\r\n            for neighbour in self.adj[node]:\r\n                if not visited[neighbour]:\r\n                    visited[neighbour] = True\r\n                    queue.append(neighbour)\r\n\r\n\r\n# Main Program\r\nn = 6\r\n\r\nedges = [\r\n    (0, 1),\r\n    (0, 2),\r\n    (1, 3),\r\n    (2, 4),\r\n    (3, 5)\r\n]\r\n\r\ng = Graph(n)\r\ng.create_graph(edges)\r\n\r\nprint(\"\\n\\nAdjacency Matrix:\")\r\nfor row in g.matrix:\r\n    print(row)\r\n\r\nprint(\"\\nDFS Traversal:\")\r\ng.dfs(0, [False] * n)\r\n\r\nprint(\"\\n\\nBFS Traversal:\")\r\ng.bfs(0)\r\n\r\nprint()","prl-9.py":"class Node:\r\n    def __init__(self, key):\r\n        self.key = key\r\n        self.left = None\r\n        self.right = None\r\n\r\n\r\nclass BST:\r\n    def __init__(self):\r\n        self.root = None\r\n\r\n    def insert(self, root, key):\r\n        if root is None:\r\n            return Node(key)\r\n\r\n        if key \u003c root.key:\r\n            root.left = self.insert(root.left, key)\r\n        elif key \u003e root.key:\r\n            root.right = self.insert(root.right, key)\r\n\r\n        return root\r\n\r\n    def search(self, root, key):\r\n        if root is None:\r\n            return False\r\n\r\n        if root.key == key:\r\n            return True\r\n\r\n        if key \u003c root.key:\r\n            return self.search(root.left, key)\r\n\r\n        return self.search(root.right, key)\r\n\r\n    def min_value_node(self, root):\r\n        current = root\r\n\r\n        while current.left is not None:\r\n            current = current.left\r\n\r\n        return current\r\n\r\n    def delete(self, root, key):\r\n        if root is None:\r\n            return None\r\n\r\n        if key \u003c root.key:\r\n            root.left = self.delete(root.left, key)\r\n\r\n        elif key \u003e root.key:\r\n            root.right = self.delete(root.right, key)\r\n\r\n        else:\r\n            if root.left is None:\r\n                return root.right\r\n\r\n            elif root.right is None:\r\n                return root.left\r\n\r\n            temp = self.min_value_node(root.right)\r\n            root.key = temp.key\r\n            root.right = self.delete(root.right, temp.key)\r\n\r\n        return root\r\n\r\n    def inorder(self, root):\r\n        if root is not None:\r\n            self.inorder(root.left)\r\n            print(root.key, end=\" \")\r\n            self.inorder(root.right)\r\n\r\n\r\n# Main Program\r\nbst = BST()\r\n\r\nkeys = [50, 30, 70, 20, 40, 60, 80]\r\n\r\nfor key in keys:\r\n    bst.root = bst.insert(bst.root, key)\r\n\r\nprint(\"Inorder Traversal:\")\r\nbst.inorder(bst.root)\r\n\r\nprint(\"\\n\\nSearch for key 60:\")\r\nif bst.search(bst.root, 60):\r\n    print(\"KEY 60 FOUND IN BST.\")\r\nelse:\r\n    print(\"KEY 60 NOT FOUND IN BST.\")\r\n\r\nprint(\"\\nSearch for key 90:\")\r\nif bst.search(bst.root, 90):\r\n    print(\"KEY 90 FOUND IN BST.\")\r\nelse:\r\n    print(\"KEY 90 NOT FOUND IN BST.\")\r\n\r\nprint(\"\\nDelete key 70:\")\r\nbst.root = bst.delete(bst.root, 70)\r\n\r\nprint(\"Inorder Traversal After Deletion:\")\r\nbst.inorder(bst.root)\r\n\r\nprint()"};
+
+    const toast = document.getElementById('toast');
+    const fallbackField = document.getElementById('clipboard-fallback');
+    let toastTimer;
+
+    function showToast(message, isError = false) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('visible');
+      toastTimer = window.setTimeout(() => toast.classList.remove('visible'), 2400);
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      fallbackField.value = text;
+      fallbackField.style.position = 'fixed';
+      fallbackField.style.left = '-9999px';
+      fallbackField.style.top = '0';
+      fallbackField.focus();
+      fallbackField.select();
+      const copied = document.execCommand('copy');
+      fallbackField.value = '';
+      if (!copied) throw new Error('Clipboard access is unavailable');
+    }
+
+    document.querySelectorAll('.copy-button').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const filename = button.dataset.file;
+        button.disabled = true;
+
+        try {
+          const source = sourceFiles[filename];
+          if (typeof source !== 'string') throw new Error('Source unavailable');
+
+          await copyText(source);
+          showToast('Copied Successfully!');
+        } catch (error) {
+          showToast('Copy failed. Allow clipboard access and try again.', true);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
